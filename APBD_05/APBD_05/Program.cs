@@ -17,13 +17,13 @@ public class Program
     {
         new Visit
         {
-            Id = 1, Date = new DateOnly(2020, 04, 14), AnimalId = 1, Description = "Cos tam cos tam", price = 100
+            Id = 1, Date = new DateTime(2020, 04, 14), AnimalId = 1, Description = "Cos tam cos tam", price = 100
         },
         new Visit
         {
-            Id = 2, Date = new DateOnly(2020, 04, 14), AnimalId = 3, Description = "Just buy new chomik", price = 100
+            Id = 2, Date = new DateTime(2020, 04, 14), AnimalId = 3, Description = "Just buy new chomik", price = 100
         },
-        new Visit { Id = 3, Date = new DateOnly(2020, 04, 14), AnimalId = 2, Description = "lalala", price = 200 }
+        new Visit { Id = 3, Date = new DateTime(2020, 04, 14), AnimalId = 2, Description = "lalala", price = 200 }
     };
 
     public static void Main(string[] args)
@@ -90,8 +90,8 @@ public class Program
         // VISITS
         app.MapGet("/api/visits/{id:int}", (int id) =>
         {
-            var visit = Visits.FirstOrDefault(v => v.AnimalId == id);
-            return visit == null ? Results.NotFound($"Visit for animal with id {id} was not found") : Results.Ok(visit);
+            var visit = Visits.FindAll(v => v.AnimalId == id);
+            return visit.Count == 0 ? Results.NotFound($"Visit for animal with id {id} was not found") : Results.Ok(visit);
         }).WithName("GetVisit").WithOpenApi();
 
         app.MapPost("/api/visits", (Visit visit) =>
