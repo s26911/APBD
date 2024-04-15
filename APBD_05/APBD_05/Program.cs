@@ -61,12 +61,12 @@ public class Program
             return Results.Created();
         }).WithName("AddAnimal").WithOpenApi();
 
-        app.MapPut("/api/animals/{id:int}", (int id, Animal animal) =>
+        app.MapPut("/api/animals", (Animal animal) =>
         {
-            var toEdit = Animals.FirstOrDefault(a => a.Id == id);
+            var toEdit = Animals.FirstOrDefault(a => animal.Id == a.Id);
             if (toEdit == null)
             {
-                return Results.NotFound($"Animal with id {id} was not found");
+                return Results.NotFound($"Animal with id {animal.Id} was not found");
             }
 
             Animals.Remove(toEdit);
