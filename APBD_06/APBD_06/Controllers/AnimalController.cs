@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using APBD_06.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace APBD_06.Controllers;
 
@@ -6,10 +7,17 @@ namespace APBD_06.Controllers;
 [ApiController]
 public class AnimalController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult GetStudents(string sortBy)
+    private readonly IAnimalService _service;
+
+    public AnimalController(IAnimalService service)
     {
-        
-        return Ok();
+        _service = service;
+    }
+
+    [HttpGet]
+    public IActionResult GetAnimals(string sortBy)
+    {
+        var animals = _service.GetAnimals(sortBy);
+        return Ok(animals);
     }
 }

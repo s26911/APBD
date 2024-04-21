@@ -1,3 +1,5 @@
+using APBD_06.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddXmlSerializerFormatters();
+builder.Services.AddScoped<IAnimalService, AnimalService>();
 
 // connection string:
 // "Data Source = db-mssql;Initial Catalog=2019SBD; Integrated Security=True"
