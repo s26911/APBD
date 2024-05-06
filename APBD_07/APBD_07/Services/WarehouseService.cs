@@ -8,18 +8,18 @@ public class WarehouseService : IWarehouseService
 {
     private const string ConnectionString = "Data Source = db-mssql;Initial Catalog=2019SBD; Integrated Security=True";
 
-    public int Edit(Warehouse warehouse)
+    public decimal Edit(Warehouse warehouse)
     {
         using SqlConnection connection = new SqlConnection(ConnectionString);
         connection.Open();
         if (!IfProductExists(connection, warehouse.IdProduct))
-            throw new Exception("Product with given id does not exist in the database");
+            throw new ArgumentException("Product with given id does not exist in the database");
         if (!IfWarehouseExists(connection, warehouse.IdWarehouse))
-            throw new Exception("Warehouse with given id does not exist in the database");
+            throw new ArgumentException("Warehouse with given id does not exist in the database");
         if (warehouse.Amount <= 0 )
-            throw new Exception("Amount should be greater than 0");
+            throw new ArgumentException("Amount should be greater than 0");
         if (!IfOrderExists(connection, warehouse.IdProduct, warehouse.Amount, warehouse.CreatedAt))
-            throw new Exception("No order in the database matching the request");
+            throw new ArgumentException("No order in the database matching the request");
 
         SqlCommand command = new SqlCommand("SELECT IdOrder FROM [Order] WHERE IdProduct = @IdProduct AND Amount = @Amount",
             connection);
@@ -39,7 +39,7 @@ public class WarehouseService : IWarehouseService
         
     }
 
-    private int InsertToProdWare(SqlConnection connection, Warehouse warehouse, int idOrder, decimal price)
+    private decimal InsertToProdWare(SqlConnection connection, Warehouse warehouse, int idOrder, decimal price)
     {
         using SqlCommand command = new SqlCommand("INSERT INTO Product_Warehouse VALUES (@IdWare, @IdProd, @IdOrde, @Amount, @Price, GETDATE())", connection);
         command.Parameters.AddWithValue("@IdWare", warehouse.IdWarehouse);
@@ -49,8 +49,8 @@ public class WarehouseService : IWarehouseService
         command.Parameters.AddWithValue("@Price", warehouse.Amount * price);
         command.ExecuteNonQuery();
 
-        command.CommandText = "SELECT SCOPE_IDENTITY()";
-        return (int)command.ExecuteScalar();
+        command.CommandText = "SELECT @@IDENTITY AS NewId;";
+        return (decimal)command.ExecuteScalar();
     }
 
     private void UpdateFulfilledAt(SqlConnection connection, int idOrder)
@@ -72,10 +72,10 @@ public class WarehouseService : IWarehouseService
         using SqlCommand command = new SqlCommand("SELECT CreatedAt FROM [Order] WHERE IdProduct = @Id AND Amount = @Amount", connection);
         command.Parameters.AddWithValue("@Id", idProoduct);
         command.Parameters.AddWithValue("@Amount", amount);
-        DateTime createdAt = (DateTime)command.ExecuteScalar();
-        if (createdAt == SqlDateTime.Null)
+        Object createdAt = command.ExecuteScalar();
+        if (createdAt == null)
             return false;
-        return createdAt.CompareTo(dateTime) > 0;
+        return ((DateTime)createdAt).CompareTo(dateTime) > 0;
     }
 
     private bool IfProductExists(SqlConnection connection, int id)

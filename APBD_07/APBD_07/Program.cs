@@ -15,7 +15,8 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddControllers();
-        builder.Services.AddScoped<IWarehouseService, WarehouseService>();
+        // builder.Services.AddScoped<IWarehouseService, WarehouseService>();
+        builder.Services.AddScoped<IWarehouseService, WarehouseServiceStored>();
 
         var app = builder.Build();
 

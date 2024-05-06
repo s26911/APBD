@@ -18,7 +18,17 @@ public class WarehouseController : ControllerBase
     [HttpPut]
     public IActionResult Edit([FromBody] Warehouse warehouse)
     {
-        Console.WriteLine(_service.Edit(warehouse));
-        return NoContent();
+        try
+        {
+            return Ok(_service.Edit(warehouse));
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
     }
 }
