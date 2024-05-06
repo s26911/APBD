@@ -8,9 +8,10 @@ public class WarehouseService : IWarehouseService
 {
     private const string ConnectionString = "Data Source = db-mssql;Initial Catalog=2019SBD; Integrated Security=True";
 
-    public void Edit(Warehouse warehouse)
+    public int Edit(Warehouse warehouse)
     {
         using SqlConnection connection = new SqlConnection(ConnectionString);
+        connection.Open();
         if (!IfProductExists(connection, warehouse.IdProduct))
             throw new Exception("Product with given id does not exist in the database");
         if (!IfWarehouseExists(connection, warehouse.IdWarehouse))
@@ -20,9 +21,9 @@ public class WarehouseService : IWarehouseService
         if (!IfOrderExists(connection, warehouse.IdProduct, warehouse.Amount, warehouse.CreatedAt))
             throw new Exception("No order in the database matching the request");
 
-        SqlCommand command = new SqlCommand("SELECT IdOrder FROM Order WHERE IdProduct = @Id AND Amount = @Amount",
+        SqlCommand command = new SqlCommand("SELECT IdOrder FROM [Order] WHERE IdProduct = @IdProduct AND Amount = @Amount",
             connection);
-        command.Parameters.AddWithValue("@Id", warehouse.IdProduct);
+        command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
         command.Parameters.AddWithValue("@Amount", warehouse.Amount);
         int idOrder = (int)command.ExecuteScalar();
         
@@ -31,14 +32,14 @@ public class WarehouseService : IWarehouseService
 
         command.CommandText = "SELECT Price FROM Product WHERE IdProduct = @Id";
         command.Parameters.AddWithValue("@Id", warehouse.IdProduct);
-        double price = (double)command.ExecuteScalar();
+        decimal price = (decimal)command.ExecuteScalar();
         
         UpdateFulfilledAt(connection, idOrder);
-        InsertToProdWare(connection, warehouse,idOrder, price);
+        return InsertToProdWare(connection, warehouse,idOrder, price);
         
     }
 
-    private void InsertToProdWare(SqlConnection connection, Warehouse warehouse, int idOrder, double price)
+    private int InsertToProdWare(SqlConnection connection, Warehouse warehouse, int idOrder, decimal price)
     {
         using SqlCommand command = new SqlCommand("INSERT INTO Product_Warehouse VALUES (@IdWare, @IdProd, @IdOrde, @Amount, @Price, GETDATE())", connection);
         command.Parameters.AddWithValue("@IdWare", warehouse.IdWarehouse);
@@ -47,11 +48,14 @@ public class WarehouseService : IWarehouseService
         command.Parameters.AddWithValue("@Amount", warehouse.Amount);
         command.Parameters.AddWithValue("@Price", warehouse.Amount * price);
         command.ExecuteNonQuery();
+
+        command.CommandText = "SELECT SCOPE_IDENTITY()";
+        return (int)command.ExecuteScalar();
     }
 
     private void UpdateFulfilledAt(SqlConnection connection, int idOrder)
     {
-        using SqlCommand command = new SqlCommand("UPDATE Order Set FulfilledAt = GETDATE() WHERE IdOrder = @Id", connection);
+        using SqlCommand command = new SqlCommand("UPDATE [Order] Set FulfilledAt = GETDATE() WHERE IdOrder = @Id", connection);
         command.Parameters.AddWithValue("@Id", idOrder);
         command.ExecuteNonQuery();
     }
@@ -63,12 +67,12 @@ public class WarehouseService : IWarehouseService
         return (int)command.ExecuteScalar() > 0;
     }
     
-    private bool IfOrderExists(SqlConnection connection, int idProoduct, int amount, SqlDateTime dateTime)
+    private bool IfOrderExists(SqlConnection connection, int idProoduct, int amount, DateTime dateTime)
     {
-        using SqlCommand command = new SqlCommand("SELECT CreatedAt FROM Order WHERE IdProduct = @Id AND Amount = @Amount", connection);
+        using SqlCommand command = new SqlCommand("SELECT CreatedAt FROM [Order] WHERE IdProduct = @Id AND Amount = @Amount", connection);
         command.Parameters.AddWithValue("@Id", idProoduct);
         command.Parameters.AddWithValue("@Amount", amount);
-        SqlDateTime createdAt = (SqlDateTime)command.ExecuteScalar();
+        DateTime createdAt = (DateTime)command.ExecuteScalar();
         if (createdAt == SqlDateTime.Null)
             return false;
         return createdAt.CompareTo(dateTime) > 0;

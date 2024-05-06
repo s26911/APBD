@@ -18,7 +18,7 @@ public class WarehouseController : ControllerBase
     [HttpPut]
     public IActionResult Edit([FromBody] Warehouse warehouse)
     {
-        _service.Edit(warehouse);
+        Console.WriteLine(_service.Edit(warehouse));
         return NoContent();
     }
 }

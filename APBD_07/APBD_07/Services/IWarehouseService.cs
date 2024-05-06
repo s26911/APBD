@@ -4,5 +4,5 @@ namespace APBD_07.Services;
 
 public interface IWarehouseService
 {
-    void Edit(Warehouse warehouse);
+    int Edit(Warehouse warehouse);
 }
