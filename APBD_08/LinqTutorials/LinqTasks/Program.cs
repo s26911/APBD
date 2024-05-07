@@ -8,7 +8,7 @@ class Program
     {
         Console.WriteLine("======= ZAD X =======");
 
-        IEnumerable<Emp> result = Tasks.Task1();
+        IEnumerable<object> result = Tasks.Task10();
 
         foreach (Emp emp in result)
         {
