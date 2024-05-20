@@ -109,7 +109,14 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<object> Task10()
     {
-        return Emps;
+        // return Emps.Select(x => new Tuple<string, string, DateTime?>(x.Ename, x.Job, x.HireDate))
+        //     .Union(new []{new Tuple<string, string, DateTime?>("Brak wartości", null, null)})
+        //     .Select(x => new {Ename = x.Item1, Job = x.Item2, HireDate = x.Item3});
+        return Emps.Select(x => new { x.Ename, x.Job, x.HireDate })
+            .Union(new[]
+            {
+                new { Ename = "Brak wartości", Job = (string)null, HireDate = (DateTime?)null }
+            });
     }
 
     /// <summary>

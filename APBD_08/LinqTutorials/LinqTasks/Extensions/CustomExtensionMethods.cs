@@ -17,15 +17,15 @@ public static class CustomExtensionMethods
     }
 
     private class comp : IComparer<Tuple<string, int>>
-    {
-        public int Compare(Tuple<string, int> x, Tuple<string, int> y)
-        {
-            if (ReferenceEquals(x, y)) return 0;
-            if (ReferenceEquals(null, y)) return 1;
-            if (ReferenceEquals(null, x)) return -1;
-            var item1Comparison = string.Compare(x.Item1, y.Item1, StringComparison.Ordinal);
-            if (item1Comparison != 0) return item1Comparison;
-            return Comparer<int>.Default.Compare(x.Item2, y.Item2);
-        }
-    }
+         {
+             public int Compare(Tuple<string, int> x, Tuple<string, int> y)
+             {
+                 if (ReferenceEquals(x, y)) return 0;
+                 if (ReferenceEquals(null, y)) return 1;
+                 if (ReferenceEquals(null, x)) return -1;
+                 var item1Comparison = string.Compare(x.Item1, y.Item1, StringComparison.Ordinal);
+                 if (item1Comparison != 0) return item1Comparison;
+                 return Comparer<int>.Default.Compare(x.Item2, y.Item2);
+             }
+         }
 }
