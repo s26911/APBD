@@ -4,5 +4,5 @@ namespace APBD_10.Services;
 
 public interface IPrescriptionService
 {
-    public void AddPrescription(PrescriptionRequest request);
+    public bool AddPrescription(PrescriptionRequest request);
 }

@@ -9,10 +9,18 @@ namespace APBD_10.Controllers;
 public class PrescriptionController : ControllerBase
 {
     private IPrescriptionService _service;
+    public PrescriptionController(IPrescriptionService service)
+    {
+        _service = service;
+    }
+
     [HttpPost]
     public IActionResult AddPrescription(PrescriptionRequest prescriptionRequest)
     {
-        
-        return Ok(prescriptionRequest);
+        if (!_service.AddPrescription(prescriptionRequest))
+        {
+            return StatusCode(400);
+        };
+        return Ok();
     }
 }

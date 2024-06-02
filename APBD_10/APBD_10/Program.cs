@@ -1,4 +1,5 @@
 using APBD_10.Entities;
+using APBD_10.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace APBD_10;
@@ -16,6 +17,7 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddControllers();
+        builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 
         builder.Services.AddDbContext<HospitalDbContext>(e =>
         {
