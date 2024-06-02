@@ -8,6 +8,7 @@ public class PrescriptionEFConfig : IEntityTypeConfiguration<Prescription>
     public void Configure(EntityTypeBuilder<Prescription> builder)
     {
         builder.HasKey(e => e.IdPrescription).HasName("Prescription_pk");
+        builder.Property(e => e.IdPrescription).UseIdentityColumn();
         builder.Property(e => e.Date).IsRequired();
         builder.Property(e => e.DueDate).IsRequired();
         builder.HasOne(e => e.Doctor)

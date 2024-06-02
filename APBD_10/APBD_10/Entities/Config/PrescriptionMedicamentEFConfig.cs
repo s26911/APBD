@@ -7,16 +7,18 @@ public class PrescriptionMedicamentEFConfig : IEntityTypeConfiguration<Prescript
 {
     public void Configure(EntityTypeBuilder<PrescriptionMedicament> builder)
     {
-        //TODO pk -> 2 fk
-        // builder.Property(e => e.Dose)
+        builder.HasKey(e => new { e.MedicamentId, e.PrescriptionId });
         builder.Property(e => e.Details).IsRequired().HasMaxLength(100);
+        
         builder.HasOne(e => e.Medicament)
             .WithMany(e => e.PrescriptionMedicaments)
             .HasConstraintName("PrescriptionMedicament_Medicament")
+            .HasForeignKey(e => e.MedicamentId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Prescription)
             .WithMany(e => e.PrescriptionMedicaments)
             .HasConstraintName("PrescriptionMedicament_Prescription")
+            .HasForeignKey(e => e.PrescriptionId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.ToTable("PrescriptionMedicament");
