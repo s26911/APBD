@@ -30,14 +30,19 @@ public class PrescriptionService : IPrescriptionService
         if (request.Medicaments.Count > 10 || request.DueDate < request.Date)
             return false;
 
-        List<Medicament> medicaments = new List<Medicament>();
-        foreach (var medicament in request.Medicaments)
-        {
-            Medicament? found = _DbContext.Medicaments.Find(medicament.IdMedicament);
-            if (found == null)
-                return false;
-            medicaments.Add(found);
-        }
+        int[] ids = request.Medicaments.Select(e => e.IdMedicament).ToArray();
+        List<Medicament> medicaments = _DbContext.Medicaments.Where(e => ids.Contains(e.IdMedicament)).ToList();
+        if (ids.Length != medicaments.Count)
+            return false;
+        
+        // List<Medicament> medicaments = new List<Medicament>();
+        // foreach (var medicament in request.Medicaments)
+        // {
+        //     Medicament? found = _DbContext.Medicaments.Find(medicament.IdMedicament);
+        //     if (found == null)
+        //         return false;
+        //     medicaments.Add(found);
+        // }
 
         Prescription toAdd = new Prescription()
         {
@@ -62,6 +67,7 @@ public class PrescriptionService : IPrescriptionService
         }
 
         toAdd.PrescriptionMedicaments = prescriptionMedicaments;
+        _DbContext.Prescriptions.Add(toAdd);
         _DbContext.SaveChanges();
         return true;
     }

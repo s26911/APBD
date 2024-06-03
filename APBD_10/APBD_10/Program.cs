@@ -36,7 +36,7 @@ public class Program
 
         app.UseHttpsRedirection();
         app.MapControllers();
-        app.UseAuthorization();
+        // app.UseAuthorization();
 
         app.Run();
     }
